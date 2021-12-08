@@ -1,93 +1,25 @@
 <template>
   <div id="home">
     <nav-bar class="home-nav"><div slot='center'>购物街</div></nav-bar>
-    <home-swiper :banners="banners"></home-swiper>
-    <recommend-view :recommends="recommends"></recommend-view>
-    <feature-view></feature-view>
-    <tab-control
-          :titles="['流行', '新款', '精选']"
-          class="tab-control"
-          @tabClick="tabClick"></tab-control>
-    <good-list :goods="showGoods"></good-list>
-    <ul>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
-    	<li>列表</li>
 
-    </ul>
+    <div class="wrapper">
+      <scroll class="content"
+              ref="scroll"
+              :probe-type="3"
+              @scroll="contentScroll"
+              :pull-up-load="true"
+              @pullingUp="loadMore">
+        <home-swiper :banners="banners"></home-swiper>
+        <recommend-view :recommends="recommends"></recommend-view>
+        <feature-view></feature-view>
+        <tab-control
+              :titles="['流行', '新款', '精选']"
+              class="tab-control"
+              @tabClick="tabClick"></tab-control>
+        <good-list :goods="showGoods"></good-list>
+      </scroll>
+      <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
+    </div>
   </div>
 </template>
 
@@ -99,6 +31,8 @@
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from '../../components/content/tabControl/TabControl'
   import GoodList from '../../components/content/goods/GoodsList'
+  import Scroll from 'components/common/scroll/Scroll'
+  import BackTop from '../../components/content/backTop/BackTop'
 
   import {
     getHomeMultidata,
@@ -114,7 +48,9 @@
       FeatureView,
       NavBar,
       TabControl,
-      GoodList
+      GoodList,
+      Scroll,
+      BackTop
     },
     data() {
       return {
@@ -125,7 +61,9 @@
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []},
         },
-        currentType: 'pop'
+        currentType: 'pop',
+        // 可能会把isShow当成一个变量
+        isShowBackTop: false
       }
     },
     computed: {
@@ -159,6 +97,20 @@
           break
         }
       },
+      backClick() {
+        // console.log("dianji")
+        this.$refs.scroll.scrollTo(0, 0, 1000)
+      },
+      contentScroll(position) {
+        // console.log(position);
+        this.isShowBackTop = (-position.y) > 1000
+      },
+      loadMore() {
+        this.getHomeGoods(this.currentType)
+
+        this.$refs.scroll.scroll.refresh()
+      },
+
       /**
        * 网络请求相关方法
        */
@@ -177,13 +129,15 @@
           // console.log(res);
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
+
+          this.$refs.scroll.finishPullUp()
         })
       }
     }
   }
 </script>
 
-<style>
+<style scoped>
   #home {
     height: 100vh;
     position: relative;
@@ -193,7 +147,7 @@
     background-color: var(--color-tint);
     color: #fff;
     position: relative;
-    z-index: 9;
+    z-index: 10;
   }
 
   .tab-control {
@@ -208,4 +162,5 @@
     left: 0;
     right: 0;
   }
+
 </style>

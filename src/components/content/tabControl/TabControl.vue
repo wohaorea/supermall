@@ -34,8 +34,8 @@
   }
 </script>
 
-<style>
-.tab-control {
+<style scoped>
+  .tab-control {
     display: flex;
     text-align: center;
     font-size: 16px;

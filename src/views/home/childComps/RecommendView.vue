@@ -23,7 +23,7 @@
   }
 </script>
 
-<style>
+<style scoped>
  .recommend {
     display: flex;
     margin-top: 10px;
