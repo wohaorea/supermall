@@ -1,23 +1,27 @@
 <template>
   <div id="home">
+
     <nav-bar class="home-nav"><div slot='center'>购物街</div></nav-bar>
-
-
     <div class="wrapper">
-
+        <tab-control
+              :titles="['流行', '新款', '精选']"
+              @tabClick="tabClick"
+              ref="tabControl"
+              class="tab-control"
+              v-show="isTabFixed"></tab-control>
       <scroll class="content"
               ref="scroll"
               :probe-type="3"
               @scroll="contentScroll"
               :pull-up-load="true"
               @pullingUp="loadMore">
-        <home-swiper :banners="banners"></home-swiper>
+        <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
         <recommend-view :recommends="recommends"></recommend-view>
         <feature-view></feature-view>
         <tab-control
               :titles="['流行', '新款', '精选']"
-              class="tab-control"
-              @tabClick="tabClick"></tab-control>
+              @tabClick="tabClick"
+              ref="tabControl"></tab-control>
         <good-list :goods="showGoods"></good-list>
       </scroll>
       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
@@ -67,7 +71,9 @@
         },
         currentType: 'pop',
         // 可能会把isShow当成一个变量
-        isShowBackTop: false
+        isShowBackTop: false,
+        tabOffsetTop: 0,
+        isTabFixed: false
       }
     },
 
@@ -87,7 +93,7 @@
       },
 
     mounted() {
-
+      // 调用防抖debounce
       const refresh = debounce(this.$refs.scroll.refresh, 50)
 
       // 3.监听item中图片加载完成
@@ -95,6 +101,10 @@
         // console.log("-----");
         refresh()
       })
+
+      // 2.获取tabControl的offsetTop
+      // 所有的组件都有一个属性$el: 用于获取组件中的元素
+      // this.tabOffsetTop = this.$refs.tabControl
     },
 
     methods: {
@@ -102,6 +112,7 @@
        * 事件监听相关的方法
        */
 
+      // 该方法已封装到common/utils.js
       // refresh()函数的防抖
       // debounce(func, delay) {
       //   let timer = null
@@ -133,12 +144,19 @@
       },
       contentScroll(position) {
         // console.log(position);
+        // 1.判断BackTop是否显示
         this.isShowBackTop = (-position.y) > 1000
+
+        // 2.决定tabControl是否吸顶(position: fixed)
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
 
         this.$refs.scroll.scroll.refresh()
+      },
+      swiperImageLoad() {
+        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
       },
 
       /**
@@ -160,6 +178,7 @@
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1
 
+          // 完成加载了更多,需要再调用一次finishPullUp
           this.$refs.scroll.finishPullUp()
         })
       }
@@ -180,11 +199,6 @@
     z-index: 10;
   }
 
-  .tab-control {
-    position: relative;
-    z-index: 9;
-  }
-
   .content {
     position: absolute;
     top: 44px;
@@ -193,4 +207,8 @@
     right: 0;
   }
 
+  .tab-control {
+    position: relative;
+    z-index: 9;
+  }
 </style>

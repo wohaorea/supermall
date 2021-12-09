@@ -39,7 +39,7 @@
     display: flex;
     text-align: center;
     font-size: 16px;
-    height: 40px;
+    height: 42px;
     line-height: 40px;
     background-color: #fff;
   }
