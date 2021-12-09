@@ -2,7 +2,9 @@
   <div id="home">
     <nav-bar class="home-nav"><div slot='center'>购物街</div></nav-bar>
 
+
     <div class="wrapper">
+
       <scroll class="content"
               ref="scroll"
               :probe-type="3"
@@ -38,10 +40,11 @@
     getHomeMultidata,
     getHomeGoods,
   } from 'network/home'
-
+  import {debounce} from "@/common/utils"
 
   export default {
     name: "Home",
+
     components: {
       HomeSwiper,
       RecommendView,
@@ -52,6 +55,7 @@
       Scroll,
       BackTop
     },
+
     data() {
       return {
         banners: [],
@@ -66,11 +70,13 @@
         isShowBackTop: false
       }
     },
+
     computed: {
       showGoods() {
         return this.goods[this.currentType].list
       }
     },
+
     created() {
       // 1.请求多个数据
       this.getHomeMultidata()
@@ -78,11 +84,35 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+      },
+
+    mounted() {
+
+      const refresh = debounce(this.$refs.scroll.refresh, 50)
+
+      // 3.监听item中图片加载完成
+      this.$bus.$on("itemImageLoad", () => {
+        // console.log("-----");
+        refresh()
+      })
     },
+
     methods: {
       /**
        * 事件监听相关的方法
        */
+
+      // refresh()函数的防抖
+      // debounce(func, delay) {
+      //   let timer = null
+      //   return function (...args) {
+      //     if (timer) clearTimeout(timer)
+      //     timer = setTimeout(() => {
+      //       func.apply(this, args)
+      //     }, delay)
+      //   }
+
+      // },
       tabClick(index) {
         // console.log(index);
         switch(index) {
