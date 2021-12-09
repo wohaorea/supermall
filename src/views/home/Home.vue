@@ -73,7 +73,8 @@
         // 可能会把isShow当成一个变量
         isShowBackTop: false,
         tabOffsetTop: 0,
-        isTabFixed: false
+        isTabFixed: false,
+        saveY: 0
       }
     },
 
@@ -82,7 +83,16 @@
         return this.goods[this.currentType].list
       }
     },
-
+    destroyed() {
+      console.log('dest');
+    },
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.getScrollY()
+    },
     created() {
       // 1.请求多个数据
       this.getHomeMultidata()
