@@ -137,8 +137,8 @@
           this.currentType = 'sell'
           break
         }
-        this.$refs.TabControl1.currentIndex = index;
-        this.$refs.TabControl2.currentIndex = index;
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
       },
       backClick() {
         // console.log("dianji")
