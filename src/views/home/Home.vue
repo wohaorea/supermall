@@ -6,7 +6,7 @@
         <tab-control
               :titles="['流行', '新款', '精选']"
               @tabClick="tabClick"
-              ref="tabControl"
+              ref="tabControl1"
               class="tab-control"
               v-show="isTabFixed"></tab-control>
       <scroll class="content"
@@ -21,7 +21,7 @@
         <tab-control
               :titles="['流行', '新款', '精选']"
               @tabClick="tabClick"
-              ref="tabControl"></tab-control>
+              ref="tabControl2"></tab-control>
         <good-list :goods="showGoods"></good-list>
       </scroll>
       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
@@ -137,6 +137,8 @@
           this.currentType = 'sell'
           break
         }
+        this.$refs.TabControl1.currentIndex = index;
+        this.$refs.TabControl2.currentIndex = index;
       },
       backClick() {
         // console.log("dianji")
@@ -156,7 +158,7 @@
         this.$refs.scroll.scroll.refresh()
       },
       swiperImageLoad() {
-        this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
       },
 
       /**
