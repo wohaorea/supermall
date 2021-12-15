@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="itemClick">
     <img :src="goodsItem.show.img" alt="" @load="imagload">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
@@ -25,6 +25,17 @@
         // console.log("imagload");
         // 发射事件总线
         this.$bus.$emit('itemImageLoad')
+      },
+      itemClick() {
+        // 路由跳转
+        this.$router.push('/detail/' + this.goodsItem.iid)
+        // query的写法
+        // this.$router.push({
+        //   path: '/detail',
+        //   query: {
+            
+        //   }
+        // })
       }
     }
   }

@@ -23,6 +23,7 @@
               @tabClick="tabClick"
               ref="tabControl2"></tab-control>
         <good-list :goods="showGoods"></good-list>
+        <detail></detail>
       </scroll>
       <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
     </div>
@@ -37,6 +38,7 @@
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from '../../components/content/tabControl/TabControl'
   import GoodList from '../../components/content/goods/GoodsList'
+  import Detail from '../detail/Detail'
   import Scroll from 'components/common/scroll/Scroll'
   import BackTop from '../../components/content/backTop/BackTop'
 
@@ -56,6 +58,7 @@
       NavBar,
       TabControl,
       GoodList,
+      Detail,
       Scroll,
       BackTop
     },
