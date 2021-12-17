@@ -1,12 +1,12 @@
 <template>
   <div id="detail">
     <detail-nav-bar class="detail-nav"></detail-nav-bar>
-    <scroll class="content">
+    <scroll class="content" ref="scroll">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
-      <detail-goods-info :detail-info="detailInfo"></detail-goods-info>
-      <detail-param-info :param-info="paramInfo"></detail-param-info>
+      <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
+      <detail-param-info :param-info="paramInfo" @imageLoad="imageLoad"></detail-param-info>
     </scroll>
   </div>
 </template>
