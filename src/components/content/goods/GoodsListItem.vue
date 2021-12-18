@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" alt="" @load="imagload">
+    <img :src="showImage" alt="" @load="imagload">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -16,15 +16,24 @@
       goodsItem: {
         type: Object,
         default() {
-          return
+          return {}
         }
+      }
+    },
+    computed: {
+      showImage() {
+        return this.goodsItem.image || this.goodsItem.show.img
       }
     },
     methods: {
       imagload() {
         // console.log("imagload");
         // 发射事件总线
-        this.$bus.$emit('itemImageLoad')
+        if (this.$route.path.indexOf('/home')) {
+          this.$bus.$emit('homeitemImageLoad')
+        } else if (this.$route.path.indexOf('/detail')) {
+          this.$bus.$emit('detailitemImageLoad')
+        }
       },
       itemClick() {
         // 路由跳转
@@ -33,7 +42,7 @@
         // this.$router.push({
         //   path: '/detail',
         //   query: {
-            
+
         //   }
         // })
       }
