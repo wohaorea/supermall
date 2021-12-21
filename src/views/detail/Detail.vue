@@ -1,18 +1,22 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"></detail-nav-bar>
-    <scroll class="content" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"></detail-nav-bar>
+    <!-- 属性: topImages  传入值: top-images -->
+    <scroll class="content"
+            ref="scroll"
+            :probe-type="3"
+            @scroll="contentScroll">
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"></detail-goods-info>
-      <detail-param-info :param-info="paramInfo"></detail-param-info>
-      <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
-
-      <goods-list :goods="recommends"></goods-list>
+      <detail-param-info :param-info="paramInfo" ref="params"></detail-param-info>
+      <detail-comment-info :comment-info="commentInfo" ref="comment"></detail-comment-info>
+      <goods-list :goods="recommends" ref="recommend"></goods-list>
     </scroll>
   </div>
 </template>
+
 
 <script>
   import DetailNavBar from './childComps/DetailNavBar'
@@ -51,7 +55,9 @@
         detailInfo: {},
         paramInfo: {},
         commentInfo: {},
-        recommends: []
+        recommends: [],
+        themeTopYs: [],
+        currentIndex: 0
       }
     },
     created() {
@@ -88,10 +94,56 @@
         this.recommends = res.data.list
       })
     },
+    // updated() {
+    //   this.themeTopYs = []
+    //   // 根据最新的数据,对应的DOM是已经被渲染出来
+    //   // 但是图片依然是没有加载完()
+    //   // offsetTop值不对的时候,都是因为图片的问题
+    //   this.themeTopYs.push(0);
+    //   this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+    //   this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+    //   this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+
+
+    //   console.log(this.themeTopYs)
+    // },
     methods: {
       imageLoad() {
         // 解决划不动的bug，让图片加载完重新刷新一次
         this.$refs.scroll.refresh()
+
+        this.themeTopYs.push(0);
+        this.themeTopYs.push(this.$refs.params.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.comment.$el.offsetTop)
+        this.themeTopYs.push(this.$refs.recommend.$el.offsetTop)
+
+
+        console.log(this.themeTopYs)
+      },
+      titleClick(index) {
+        // console.log(index)
+        // 滚动到某一个位置
+        this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
+      },
+      contentScroll(position) {
+        // console.log(position)
+        // 1.获取y值
+        const positionY = -position.y
+        let length = this.themeTopYs.length
+        // 2.positionY和主题中的值进行对比
+        for(let i = 0; i < this.themeTopYs.length; i++) {
+          // console.log(i)
+          // if (positionY > this.themeTopYs[i] && positionY < this.themeTopYs[i+1]) {
+          //   console.log(i)
+          // }
+
+          if (this.currentIndex !== i && (i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i+1]) || (i === length - 1 && positionY >= this.themeTopYs[i])) {
+            // console.log(i)
+            this.currentIndex = i;
+            console.log(this.currentIndex);
+            this.$refs.nav.currentIndex = this.currentIndex
+          }
+        }
       }
     }
   }

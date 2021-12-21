@@ -38,6 +38,8 @@
         if (++this.counter === this.imagesLength) {
 	        this.$emit('imageLoad')
         }
+        // this.$refs.scroll.refresh()
+
 	    }
     },
     watch: {
