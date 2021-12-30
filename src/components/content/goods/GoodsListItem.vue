@@ -27,13 +27,19 @@
     },
     methods: {
       imagload() {
+        // 方法一
         // console.log("imagload");
         // 发射事件总线
-        if (this.$route.path.indexOf('/home')) {
-          this.$bus.$emit('homeitemImageLoad')
-        } else if (this.$route.path.indexOf('/detail')) {
-          this.$bus.$emit('detailitemImageLoad')
-        }
+      //   if (this.$route.path.indexOf('/home')) {
+      //     this.$bus.$emit('homeitemImageLoad')
+      //   } else if (this.$route.path.indexOf('/detail')) {
+      //     this.$bus.$emit('detailitemImageLoad')
+      //   }
+
+      // 方法二
+        this.$bus.$emit('ImageLoad')
+
+
       },
       itemClick() {
         // 路由跳转

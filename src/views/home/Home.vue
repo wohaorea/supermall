@@ -40,13 +40,14 @@
   import GoodList from '../../components/content/goods/GoodsList'
   import Detail from '../detail/Detail'
   import Scroll from 'components/common/scroll/Scroll'
-  import BackTop from '../../components/content/backTop/BackTop'
+
 
   import {
     getHomeMultidata,
     getHomeGoods,
   } from 'network/home'
-  import {debounce} from "@/common/utils"
+  import {debouce} from "@/common/utils"
+  import {itemListenerMixin, backTopMixin} from '@/common/mixin'
 
   export default {
     name: "Home",
@@ -59,10 +60,9 @@
       TabControl,
       GoodList,
       Detail,
-      Scroll,
-      BackTop
+      Scroll
     },
-
+    mixins: [itemListenerMixin, backTopMixin],
     data() {
       return {
         banners: [],
@@ -74,10 +74,10 @@
         },
         currentType: 'pop',
         // 可能会把isShow当成一个变量
-        isShowBackTop: false,
         tabOffsetTop: 0,
         isTabFixed: false,
-        saveY: 0
+        saveY: 0,
+
       }
     },
 
@@ -94,7 +94,11 @@
       this.$refs.scroll.refresh()
     },
     deactivated() {
+      // 1.保存Y值
       this.saveY = this.$refs.scroll.getScrollY()
+
+      // 2.取消全局事件的监听
+      this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     created() {
       // 1.请求多个数据
@@ -106,14 +110,14 @@
       },
 
     mounted() {
-      // 调用防抖debounce
-      const refresh = debounce(this.$refs.scroll.refresh, 50)
-
+      // 调用防抖debouce
+      // let newrefresh = debouce(this.$refs.scroll.refresh, 50)
+      // 对监听的事件进行保存
+      // this.itemImgListener = () => {
+      //   newRefresh()
+      // }
       // 3.监听item中图片加载完成
-      this.$bus.$on("itemImageLoad", () => {
-        // console.log("-----");
-        refresh()
-      })
+      // this.$bus.$on("itemImageLoad", this.itemImgListener)
 
       // 2.获取tabControl的offsetTop
       // 所有的组件都有一个属性$el: 用于获取组件中的元素
@@ -153,15 +157,10 @@
         this.$refs.tabControl1.currentIndex = index;
         this.$refs.tabControl2.currentIndex = index;
       },
-      backClick() {
-        // console.log("dianji")
-        this.$refs.scroll.scrollTo(0, 0, 1000)
-      },
       contentScroll(position) {
         // console.log(position);
         // 1.判断BackTop是否显示
-        this.isShowBackTop = (-position.y) > 1000
-
+        this.listenShowBackTop(position)
         // 2.决定tabControl是否吸顶(position: fixed)
         this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
