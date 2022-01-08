@@ -6,11 +6,6 @@
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll">
-      <ul>
-      	<li v-for="item in $store.state.cartList">
-          {{item}}
-        </li>
-      </ul>
       <detail-swiper :top-images="topImages"></detail-swiper>
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
@@ -189,7 +184,7 @@
         product.iid = this.iid
 
         // 2.将商品加入到购物车
-        this.$store.commit('addCart', product)
+        // this.$store.commit('addCart', product)
         this.$store.dispatch('addCart', product)
       }
     }
